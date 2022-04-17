@@ -1,27 +1,43 @@
 <script>
     import Column from "../../components/Column.vue"
+    import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
-    name:'board-view',
-    components:{Column},
-
-    props: {
-        name: String,
-        id: String
-    },
-    data (){
-        return {
-            listName: '',
-            boardList: [
-                {id: 1, name: 'Todo'},
-                {id: 2, name: 'Doing'}
-            ]
-        }
-    },
-    methods: {
-        add(){
-            this.boardList.push({name: this.listName})
-        }
+    name: 'board',
+  components: { Column },
+  props: {
+    name: String,
+    id: String
+  },
+  data () {
+    return {
+      listName: ''
     }
+  },
+  computed: {
+    ...mapState([
+      'fetchingData',
+      'error'
+    ]),
+    ...mapGetters([
+      'getListsByBoard'
+    ]),
+    boardLists () {
+      return this.getListsByBoard(this.id)
+    }
+  },
+  methods: {
+    ...mapActions([
+      'addColumn',
+      'fetchLists'
+    ]),
+    add () {
+      this.addColumn({ board: this.id, name: this.listName })
+      this.listName = ''
+    }
+  },
+  created () {
+    this.fetchLists({ board: this.id })
+  }
 }
 
 </script>
